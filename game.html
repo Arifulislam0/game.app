@@ -3,163 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arifulcom VIP Gaming Hub</title>
+    <title>Ariful VIP Gaming Hub</title>
     <style>
         :root { --gold: #ffcc00; --dark-bg: #0d0d0d; --card-bg: #1a1a1a; --neon: #39ff14; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--dark-bg); color: white; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--dark-bg); color: white; margin: 0; padding: 0; overflow-x: hidden; }
         
-        /* টপ বার */
+        /* লগইন স্ক্রিন - শুরুতেই এটি দেখাবে */
+        #auth-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; }
+        .auth-box { background: #1a1a1a; padding: 25px; border-radius: 15px; border: 2px solid var(--gold); text-align: center; width: 85%; max-width: 350px; }
+        .auth-btn { background: var(--gold); color: black; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 16px; }
+        .guest-btn { background: #333; color: white; margin-top: 15px; }
+
+        /* মেইন ইন্টারফেস */
+        #main-app { display: none; } /* শুরুতে এটি লুকানো থাকবে */
         .header { background: #161618; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
         .balance-pill { background: #26262b; padding: 5px 15px; border-radius: 20px; border: 1px solid var(--gold); font-weight: bold; color: var(--gold); }
 
-        /* লাইভ উইনার নোটিফিকেশন */
-        .live-ticker { background: rgba(57, 255, 20, 0.1); color: var(--neon); padding: 5px; font-size: 12px; text-align: center; border-bottom: 1px solid #333; }
-
-        /* ব্যানার */
-        .hero-banner { width: 100%; height: 150px; background: linear-gradient(45deg, #b8860b, #ffcc00); display: flex; align-items: center; justify-content: center; color: black; font-weight: bold; text-align: center; font-size: 20px; text-transform: uppercase; }
-
-        /* গেম গ্রিড */
         .game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
         .game-item { background: var(--card-bg); border-radius: 12px; border: 1px solid #333; overflow: hidden; text-align: center; padding-bottom: 10px; }
         .game-thumb { height: 100px; font-size: 50px; display: flex; align-items: center; justify-content: center; background: #222; margin-bottom: 10px; }
-        .btn-play { background: var(--gold); color: black; border: none; padding: 8px 20px; border-radius: 5px; font-weight: bold; cursor: pointer; width: 80%; }
-
-        /* পেমেন্ট সেকশন */
-        .wallet-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 15px; }
-        .btn-action { padding: 12px; border: none; border-radius: 8px; font-weight: bold; color: white; cursor: pointer; }
-        .dep { background: #28a745; } .wit { background: #dc3545; }
-
-        /* গেম প্লে স্ক্রিন (লুকানো থাকবে) */
-        #game-screen { position: fixed; inset: 0; background: var(--dark-bg); z-index: 2000; display: none; flex-direction: column; align-items: center; justify-content: center; }
-        .card-slot { width: 120px; height: 180px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 80px; color: black; margin-bottom: 20px; transition: 0.5s; }
         
-        /* লগইন */
-        #login-overlay { position: fixed; inset: 0; background: black; z-index: 3000; display: flex; justify-content: center; align-items: center; }
-        .login-box { background: #1a1a1a; padding: 30px; border-radius: 15px; border: 2px solid var(--gold); text-align: center; width: 85%; }
-        input { width: 100%; padding: 12px; margin: 15px 0; border-radius: 5px; border: none; box-sizing: border-box; }
+        .footer-nav { position: fixed; bottom: 0; width: 100%; background: #161618; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #333; }
+        .nav-item { font-size: 12px; color: #888; text-align: center; }
     </style>
 </head>
 <body>
 
-<div id="login-overlay">
-    <div class="login-box">
-        <h2 style="color:var(--gold)">ARIFUL VIP GAMES</h2>
-        <input type="text" id="p-name" placeholder="আপনার ইউজার নেম">
-        <button class="btn-play" style="padding:15px" onclick="login()">বোনাস নিয়ে খেলা শুরু করুন</button>
+<div id="auth-overlay">
+    <div class="auth-box">
+        <h2 style="color:var(--gold); margin-bottom: 20px;">ARIFUL VIP LOGIN</h2>
+        <input type="text" id="user-input" placeholder="মোবাইল নম্বর বা ইউজার নেম" style="width:100%; padding:12px; margin-bottom:10px; border-radius:5px; border:none; box-sizing:border-box;">
+        <button class="auth-btn" onclick="enterApp('User')">SIGN UP / LOGIN</button>
+        <div style="margin: 15px 0; color: #555;">OR</div>
+        <button class="auth-btn guest-btn" onclick="enterApp('Guest')">GUEST LOGIN</button>
+        <p style="font-size: 12px; color: var(--gold); margin-top: 15px;">লগইন করলেই পাবেন ৳১০০০ বোনাস!</p>
     </div>
 </div>
 
-<div class="header">
-    <div style="font-size: 14px;">ID: <span id="user-id">---</span></div>
-    <div class="balance-pill">৳ <span id="bal-val">0</span></div>
-</div>
-
-<div class="live-ticker" id="ticker">অপেক্ষা করুন... লাইভ উইনার চেক করা হচ্ছে</div>
-
-<div class="hero-banner">
-    Magic Ace Event!<br>Win 5X Reward
-</div>
-
-<div class="game-grid">
-    <div class="game-item">
-        <div class="game-thumb">🂡</div>
-        <h4>Magic Ace</h4>
-        <button class="btn-play" onclick="openGame('Magic Ace')">Play Now</button>
+<div id="main-app">
+    <div class="header">
+        <div style="font-size: 14px;">ID: <span id="display-id">---</span></div>
+        <div class="balance-pill">৳ <span id="bal-val">0</span></div>
     </div>
-    <div class="game-item">
-        <div class="game-thumb">🎰</div>
-        <h4>Jili Slot</h4>
-        <button class="btn-play" onclick="openGame('Jili Slot')">Play Now</button>
-    </div>
-    <div class="game-item">
-        <div class="game-thumb">🎲</div>
-        <h4>Dice Win</h4>
-        <button class="btn-play" onclick="openGame('Dice Win')">Play Now</button>
-    </div>
-    <div class="game-item">
-        <div class="game-thumb">🎡</div>
-        <h4>Crazy Spin</h4>
-        <button class="btn-play" onclick="openGame('Crazy Spin')">Play Now</button>
-    </div>
-</div>
 
-<div class="wallet-actions">
-    <button class="btn-action dep" onclick="alert('বিকাশ নম্বর: +8801572494460 তে সেন্ড মানি করুন')">ডিপোজিট</button>
-    <button class="btn-action wit" onclick="alert('উইথড্র রিকোয়েস্ট পাঠানো হয়েছে!')">উইথড্র</button>
-</div>
+    <div style="background: rgba(57, 255, 20, 0.1); color: var(--neon); padding: 8px; font-size: 12px; text-align: center;">
+        🔥 লাইভ: <span id="ticker-text">Sohan এইমাত্র ৳৫০০ জিতেছে!</span>
+    </div>
 
-<div id="game-screen">
-    <h2 id="game-title" style="color:var(--gold)">Game</h2>
-    <div class="card-slot" id="card-display">?</div>
-    <p>বাজি: ১০০ টাকা</p>
-    <button class="btn-play" id="deal-btn" onclick="playLogic()">কার্ড উল্টান (Deal)</button>
-    <button style="margin-top:20px; background:none; border:1px solid #444; color:#888; padding:5px 15px; border-radius:5px;" onclick="closeGame()">পিছনে যান</button>
+    <div class="game-grid">
+        <div class="game-item">
+            <div class="game-thumb">🂡</div>
+            <h4>Magic Ace</h4>
+            <button class="auth-btn" style="width:80%;" onclick="alert('গেমটি লোড হচ্ছে...')">PLAY</button>
+        </div>
+        <div class="game-item">
+            <div class="game-thumb">🎰</div>
+            <h4>Jili Slot</h4>
+            <button class="auth-btn" style="width:80%;" onclick="alert('গেমটি লোড হচ্ছে...')">PLAY</button>
+        </div>
+        <div class="game-item">
+            <div class="game-thumb">🎲</div>
+            <h4>Dice Win</h4>
+            <button class="auth-btn" style="width:80%;" onclick="alert('গেমটি লোড হচ্ছে...')">PLAY</button>
+        </div>
+        <div class="game-item">
+            <div class="game-thumb">🎡</div>
+            <h4>Super Spin</h4>
+            <button class="auth-btn" style="width:80%;" onclick="alert('গেমটি লোড হচ্ছে...')">PLAY</button>
+        </div>
+    </div>
+
+    <div style="padding: 15px; display: flex; gap: 10px;">
+        <button onclick="alert('বিকাশ: +8801572494460')" style="flex:1; background:#28a745; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold;">ডিপোজিট</button>
+        <button onclick="alert('মিনিমাম উইথড্র ৫০০ টাকা')" style="flex:1; background:#dc3545; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold;">উইথড্র</button>
+    </div>
+
+    <div class="footer-nav">
+        <div class="nav-item">🏠<br>Home</div>
+        <div class="nav-item">🎁<br>Reward</div>
+        <div class="nav-item">👤<br>Profile</div>
+    </div>
 </div>
 
 <script>
-    let balance = 0;
-    let currentGame = "";
-    const winSound = new Audio('https://www.soundjay.com/misc/sounds/bell-ringing-05.mp3');
-
-    // লগইন ও বোনাস
-    function login() {
-        const name = document.getElementById('p-name').value;
-        if(!name) return;
-        document.getElementById('login-overlay').style.display = 'none';
-        document.getElementById('user-id').innerText = name.substring(0,4).toUpperCase() + "786";
-        balance = 1000;
-        updateUI();
-        startTicker();
-    }
-
-    function updateUI() { document.getElementById('bal-val').innerText = balance; }
-
-    // লাইভ উইনার লিস্ট আপডেট (Fake Live Data)
-    function startTicker() {
-        const names = ["Abir", "Sohan", "Mim", "Rashed", "Ariful"];
-        setInterval(() => {
-            const n = names[Math.floor(Math.random()*names.length)];
-            const amount = Math.floor(Math.random()*2000) + 500;
-            document.getElementById('ticker').innerText = 🔥 ${n} এইমাত্র ৳${amount} জিতেছে!;
-        }, 4000);
-    }
-
-    // গেম স্ক্রিন ওপেন
-    function openGame(name) {
-        currentGame = name;
-        document.getElementById('game-title').innerText = name;
-        document.getElementById('game-screen').style.display = 'flex';
-        document.getElementById('card-display').innerText = "?";
-    }
-
-    function closeGame() { document.getElementById('game-screen').style.display = 'none'; }
-
-    // গেম লজিক (Magic Ace)
-    function playLogic() {
-        if(balance < 100) return alert("টাকা শেষ! ডিপোজিট করুন।");
+    function enterApp(type) {
+        const userInput = document.getElementById('user-input').value;
         
-        balance -= 100;
-        updateUI();
-        document.getElementById('deal-btn').disabled = true;
-        document.getElementById('card-display').innerText = "⌛";
+        if(type === 'User' && userInput === "") {
+            alert("দয়া করে মোবাইল নম্বর বা নাম লিখুন!");
+            return;
+        }
 
-        setTimeout(() => {
-            const isWin = Math.random() > 0.7; // ৩০% জেতার হার
-            if(isWin) {
-                document.getElementById('card-display').innerText = "A♠";
-                document.getElementById('card-display').style.color = "red";
-                balance += 500;
-                winSound.play();
-                alert("বিঙ্গো! আপনি ৫০০ টাকা জিতেছেন! 🎉");
-            } else {
-                const cards = ["K", "Q", "J", "10", "9"];
-                document.getElementById('card-display').innerText = cards[Math.floor(Math.random()*cards.length)];
-                document.getElementById('card-display').style.color = "black";
-                alert("ইস! অল্পের জন্য মিস। আবার ট্রাই করুন।");
-            }
-            updateUI();
-            document.getElementById('deal-btn').disabled = false;
-        }, 1000);
+        // লগইন সফল হলে স্ক্রিন পরিবর্তন
+        document.getElementById('auth-overlay').style.display = 'none';
+        document.getElementById('main-app').style.display = 'block';
+
+        // আইডি জেনারেট
+        const randomID = (type === 'Guest') ? "GUEST" + Math.floor(Math.random()*999) : userInput.substring(0,4).toUpperCase() + Math.floor(Math.random()*999);
+        document.getElementById('display-id').innerText = randomID;
+
+        // বোনাস যোগ
+        document.getElementById('bal-val').innerText = "1000";
+
+        alert("লগইন সফল! ৳১০০০ বোনাস আপনার অ্যাকাউন্টে যোগ করা হয়েছে। ✅");
+        startLiveTicker();
+    }
+
+    function startLiveTicker() {
+        const names = ["Mim", "Rashed", "Abir", "Sohan", "Ariful"];
+        setInterval(() => {
+            const name = names[Math.floor(Math.random()*names.length)];
+            const win = Math.floor(Math.random()*1500) + 200;
+            document.getElementById('ticker-text').innerText = ${name} এইমাত্র ৳${win} জিতেছে!;
+        }, 3000);
     }
 </script>
 
