@@ -3,121 +3,232 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ariful VIP Gaming Hub</title>
+    <title>Ariful Pro Gaming Hub</title>
     <style>
-        :root { --gold: #ffcc00; --dark-bg: #0d0d0d; --card-bg: #1a1a1a; --neon: #39ff14; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: var(--dark-bg); color: white; margin: 0; padding: 0; overflow-x: hidden; }
-        
-        /* লগইন স্ক্রিন - শুরুতেই এটি দেখাবে */
-        #auth-overlay { position: fixed; inset: 0; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; }
-        .auth-box { background: #1a1a1a; padding: 25px; border-radius: 15px; border: 2px solid var(--gold); text-align: center; width: 85%; max-width: 350px; }
-        .auth-btn { background: var(--gold); color: black; border: none; padding: 12px; width: 100%; border-radius: 8px; font-weight: bold; cursor: pointer; margin-top: 10px; font-size: 16px; }
-        .guest-btn { background: #333; color: white; margin-top: 15px; }
+        :root { --gold: #ffcc00; --dark: #000; --glass: rgba(255, 255, 255, 0.1); }
+        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Segoe UI', sans-serif; background: #000; overflow-x: hidden; }
 
-        /* মেইন ইন্টারফেস */
-        #main-app { display: none; } /* শুরুতে এটি লুকানো থাকবে */
-        .header { background: #161618; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--gold); position: sticky; top: 0; z-index: 1000; }
-        .balance-pill { background: #26262b; padding: 5px 15px; border-radius: 20px; border: 1px solid var(--gold); font-weight: bold; color: var(--gold); }
+        /* ১. লগইন পেজ - সুন্দর ওয়ালপেপার সহ */
+        #login-page {
+            height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
+                        url('https://wallpaperaccess.com/full/2454556.jpg'); /* এখানে আপনি আপনার পছন্দের ওয়ালপেপার লিঙ্ক দিতে পারেন */
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            z-index: 999;
+        }
 
-        .game-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; padding: 15px; }
-        .game-item { background: var(--card-bg); border-radius: 12px; border: 1px solid #333; overflow: hidden; text-align: center; padding-bottom: 10px; }
-        .game-thumb { height: 100px; font-size: 50px; display: flex; align-items: center; justify-content: center; background: #222; margin-bottom: 10px; }
-        
-        .footer-nav { position: fixed; bottom: 0; width: 100%; background: #161618; display: flex; justify-content: space-around; padding: 10px 0; border-top: 1px solid #333; }
-        .nav-item { font-size: 12px; color: #888; text-align: center; }
+        .login-card {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.2);
+            text-align: center;
+            width: 85%;
+            max-width: 400px;
+        }
+
+        /* ২. মেইন লবি - লগইন এর পর যা আসবে */
+        #lobby-page {
+            display: none;
+            background: #0a0a0a;
+            min-height: 100vh;
+        }
+
+        .top-nav {
+            background: #111;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 2px solid var(--gold);
+            position: sticky;
+            top: 0;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .game-box {
+            background: #1a1a1a;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid #333;
+            transition: 0.3s;
+            text-align: center;
+            padding-bottom: 10px;
+        }
+
+        .game-box:active { transform: scale(0.95); }
+
+        .game-img {
+            height: 120px;
+            background: #222;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 50px;
+        }
+
+        /* ৩. গেম খেলার স্ক্রিন */
+        #game-screen {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #000;
+            z-index: 1000;
+        }
+
+        /* কমন বাটন স্টাইল */
+        .btn {
+            background: var(--gold);
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 15px;
+            font-size: 16px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #555;
+            background: rgba(0,0,0,0.5);
+            color: #fff;
+            box-sizing: border-box;
+        }
     </style>
 </head>
 <body>
 
-<div id="auth-overlay">
-    <div class="auth-box">
-        <h2 style="color:var(--gold); margin-bottom: 20px;">ARIFUL VIP LOGIN</h2>
-        <input type="text" id="user-input" placeholder="মোবাইল নম্বর বা ইউজার নেম" style="width:100%; padding:12px; margin-bottom:10px; border-radius:5px; border:none; box-sizing:border-box;">
-        <button class="auth-btn" onclick="enterApp('User')">SIGN UP / LOGIN</button>
-        <div style="margin: 15px 0; color: #555;">OR</div>
-        <button class="auth-btn guest-btn" onclick="enterApp('Guest')">GUEST LOGIN</button>
-        <p style="font-size: 12px; color: var(--gold); margin-top: 15px;">লগইন করলেই পাবেন ৳১০০০ বোনাস!</p>
-    </div>
-</div>
-
-<div id="main-app">
-    <div class="header">
-        <div style="font-size: 14px;">ID: <span id="display-id">---</span></div>
-        <div class="balance-pill">৳ <span id="bal-val">0</span></div>
-    </div>
-
-    <div style="background: rgba(57, 255, 20, 0.1); color: var(--neon); padding: 8px; font-size: 12px; text-align: center;">
-        🔥 লাইভ: <span id="ticker-text">Sohan এইমাত্র ৳৫০০ জিতেছে!</span>
-    </div>
-
-    <div class="game-grid">
-        <div class="game-item">
-            <div class="game-thumb">🂡</div>
-            <h4>Magic Ace</h4>
-            <button class="auth-btn" style="width:80%;" onclick="alert('গেমটি লোড হচ্ছে...')">PLAY</button>
-        </div>
-        <div class="game-item">
-            <div class="game-thumb">🎰</div>
-            <h4>Jili Slot</h4>
-            <button class="auth-btn" style="width:80%;" onclick="alert('গেমটি লোড হচ্ছে...')">PLAY</button>
-        </div>
-        <div class="game-item">
-            <div class="game-thumb">🎲</div>
-            <h4>Dice Win</h4>
-            <button class="auth-btn" style="width:80%;" onclick="alert('গেমটি লোড হচ্ছে...')">PLAY</button>
-        </div>
-        <div class="game-item">
-            <div class="game-thumb">🎡</div>
-            <h4>Super Spin</h4>
-            <button class="auth-btn" style="width:80%;" onclick="alert('গেমটি লোড হচ্ছে...')">PLAY</button>
+    <div id="login-page">
+        <div class="login-card">
+            <h1 style="color:var(--gold); margin-bottom:10px;">ARIFUL VIP</h1>
+            <p style="color:#ddd; margin-bottom:20px;">লগইন করে ১০০০ টাকা বোনাস নিন</p>
+            <input type="text" id="username" placeholder="ইউজার নেম বা মোবাইল">
+            <button class="btn" onclick="goToLobby()">খেলতে প্রবেশ করুন</button>
+            <p style="font-size:12px; color:#aaa; margin-top:15px;">Secure Login Powered by Arifulcom</p>
         </div>
     </div>
 
-    <div style="padding: 15px; display: flex; gap: 10px;">
-        <button onclick="alert('বিকাশ: +8801572494460')" style="flex:1; background:#28a745; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold;">ডিপোজিট</button>
-        <button onclick="alert('মিনিমাম উইথড্র ৫০০ টাকা')" style="flex:1; background:#dc3545; color:white; border:none; padding:12px; border-radius:8px; font-weight:bold;">উইথড্র</button>
+    <div id="lobby-page">
+        <div class="top-nav">
+            <span id="user-id" style="color:#888;">ID: ---</span>
+            <span style="color:var(--gold); font-weight:bold;">৳ <span id="balance">0</span></span>
+        </div>
+
+        <div style="padding: 20px; color:var(--gold);"><h3>সব গেম দেখুন 🔥</h3></div>
+
+        <div class="game-grid">
+            <div class="game-box" onclick="openGame('Magic Ace')">
+                <div class="game-img" style="background: linear-gradient(45deg, #400, #000);">🂡</div>
+                <h4>Magic Ace</h4>
+                <small style="color:#888;">মিনিমাম বাজি ৳১০</small>
+            </div>
+            <div class="game-box" onclick="openGame('Slot Luck')">
+                <div class="game-img" style="background: linear-gradient(45deg, #040, #000);">🎰</div>
+                <h4>Slot Luck</h4>
+                <small style="color:#888;">মিনিমাম বাজি ৳৫০</small>
+            </div>
+            <div class="game-box" onclick="openGame('Dragon Tiger')">
+                <div class="game-img" style="background: linear-gradient(45deg, #004, #000);">🐲</div>
+                <h4>Dragon vs Tiger</h4>
+                <small style="color:#888;">খুব শীঘ্রই আসছে</small>
+            </div>
+        </div>
     </div>
 
-    <div class="footer-nav">
-        <div class="nav-item">🏠<br>Home</div>
-        <div class="nav-item">🎁<br>Reward</div>
-        <div class="nav-item">👤<br>Profile</div>
+    <div id="game-screen">
+        <div style="padding:15px; display:flex; justify-content:space-between; background:#111;">
+            <button onclick="closeGame()" style="background:red; color:white; border:none; padding:5px 15px; border-radius:5px;">Exit</button>
+            <span id="active-game-name" style="color:var(--gold); font-weight:bold;">Game</span>
+            <span style="color:var(--gold);">৳ <span id="game-bal-display">0</span></span>
+        </div>
+        <div id="game-content" style="padding:20px; text-align:center;">
+            </div>
     </div>
-</div>
 
-<script>
-    function enterApp(type) {
-        const userInput = document.getElementById('user-input').value;
-        
-        if(type === 'User' && userInput === "") {
-            alert("দয়া করে মোবাইল নম্বর বা নাম লিখুন!");
-            return;
+    <script>
+        let wallet = 1000;
+
+        // লগইন ফাংশন
+        function goToLobby() {
+            const name = document.getElementById('username').value;
+            if(!name) { alert("নাম লিখুন!"); return; }
+
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('lobby-page').style.display = 'block';
+            document.getElementById('user-id').innerText = "ID: " + name.substring(0,4).toUpperCase() + Math.floor(1000 + Math.random() * 9000);
+            document.getElementById('balance').innerText = wallet;
         }
 
-        // লগইন সফল হলে স্ক্রিন পরিবর্তন
-        document.getElementById('auth-overlay').style.display = 'none';
-        document.getElementById('main-app').style.display = 'block';
+        // গেম ওপেন করার ফাংশন
+        function openGame(name) {
+            document.getElementById('lobby-page').style.display = 'none';
+            document.getElementById('game-screen').style.display = 'block';
+            document.getElementById('active-game-name').innerText = name;
+            document.getElementById('game-bal-display').innerText = wallet;
 
-        // আইডি জেনারেট
-        const randomID = (type === 'Guest') ? "GUEST" + Math.floor(Math.random()*999) : userInput.substring(0,4).toUpperCase() + Math.floor(Math.random()*999);
-        document.getElementById('display-id').innerText = randomID;
+            if(name === 'Magic Ace') {
+                loadMagicAce();
+            } else {
+                document.getElementById('game-content').innerHTML = <h2>${name} গেমটি লোড হচ্ছে...</h2>;
+            }
+        }
 
-        // বোনাস যোগ
-        document.getElementById('bal-val').innerText = "1000";
+        // গেম বন্ধ করার ফাংশন
+        function closeGame() {
+            document.getElementById('game-screen').style.display = 'none';
+            document.getElementById('lobby-page').style.display = 'block';
+            document.getElementById('balance').innerText = wallet;
+        }
 
-        alert("লগইন সফল! ৳১০০০ বোনাস আপনার অ্যাকাউন্টে যোগ করা হয়েছে। ✅");
-        startLiveTicker();
-    }
+        // --- ম্যাজিক এস গেমের কোড ---
+        function loadMagicAce() {
+            document.getElementById('game-content').innerHTML = `
+                <div id="card-box" style="font-size:120px; margin:30px 0;">?</div>
+                <p>বাজি ধরুন (৳)</p>
+                <input type="number" id="bet-amt" value="10" style="width:100px; text-align:center;">
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button class="btn" style="background:red; color:white;" onclick="play(0)">লাল (Red)</button>
+                    <button class="btn" style="background:#333; color:white;" onclick="play(1)">কালো (Black)</button>
+                </div>
+            `;
+        }
 
-    function startLiveTicker() {
-        const names = ["Mim", "Rashed", "Abir", "Sohan", "Ariful"];
-        setInterval(() => {
-            const name = names[Math.floor(Math.random()*names.length)];
-            const win = Math.floor(Math.random()*1500) + 200;
-            document.getElementById('ticker-text').innerText = ${name} এইমাত্র ৳${win} জিতেছে!;
-        }, 3000);
-    }
-</script>
+        function play(pick) {
+            let bet = parseInt(document.getElementById('bet-amt').value);
+            if(bet > wallet) { alert("ব্যালেন্স নেই!"); return; }
 
+            const isRed = Math.random() > 0.5;
+            const win = (pick === 0 && isRed) || (pick === 1 && !isRed);
+            
+            document.getElementById('card-box').innerText = isRed ? "A♦" : "A♠";
+            document.getElementById('card-box').style.color = isRed ? "red" : "white";
+
+            if(win) {
+                wallet += bet;
+                alert("বিঙ্গো! আপনি জিতেছেন।");
+            } else {
+                wallet -= bet;
+                alert("দুঃখিত! হেরেছেন।");
+            }
+            document.getElementById('game-bal-display').innerText = wallet;
+        }
+    </script>
 </body>
 </html>
