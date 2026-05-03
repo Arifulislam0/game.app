@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Smart NID Data Entry - Ariful Tech</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;600&display=swap');
         body { background-color: #0f172a; color: #e2e8f0; font-family: 'Hind Siliguri', sans-serif; }
@@ -12,18 +13,19 @@
             background-color: #1e293b; border: 1px solid #334155; border-radius: 0.5rem; 
             padding: 0.75rem; width: 100%; color: white; transition: all 0.3s;
         }
-        .form-input:focus, .form-textarea:focus { border-color: #10b981; outline: none; ring: 1px solid #10b981; }
+        .form-input:focus { border-color: #10b981; outline: none; ring: 1px solid #10b981; }
         .preview-box {
-            background-color: #000; aspect-ratio: 16 / 7; border-radius: 0.5rem;
+            background-color: #000; aspect-ratio: 16 / 8; border-radius: 0.5rem;
             display: flex; align-items: center; justify-content: center;
             border: 1px solid #334155; position: relative; overflow: hidden;
         }
-        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
+        .preview-box img { width: 100%; height: 100%; object-fit: contain; }
+        .label-text { color: #10b981; font-size: 0.875rem; font-weight: 600; margin-bottom: 4px; display: block; }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
-    <div class="max-w-5xl mx-auto bg-[#111827] border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+    <div id="capture-area" class="max-w-5xl mx-auto bg-[#111827] border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
         <div class="bg-[#111827] p-6 border-b border-slate-800 flex justify-between items-center">
             <h1 class="text-2xl font-bold text-emerald-500">Arifulcom <span class="text-blue-500 text-sm">✔️</span></h1>
             <div class="bg-emerald-600 px-5 py-2 rounded text-white font-bold">৳ ৬০</div>
@@ -31,80 +33,64 @@
 
         <form id="nidForm" class="p-6 space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="preview-box group">
-                    <span class="text-slate-700" id="photoText">NO IMAGE</span>
-                    <img id="photoPreview" class="hidden">
-                    <input type="file" id="photoInput" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+                <div>
+                    <label class="label-text text-center">এনআইডি ছবি (Photo) *</label>
+                    <div class="preview-box group">
+                        <span class="text-slate-600" id="photoText text-xs">CHOOSE PHOTO</span>
+                        <img id="photoPreview" class="hidden">
+                        <input type="file" id="photoInput" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+                    </div>
                 </div>
-                <div class="preview-box group">
-                    <span class="text-slate-700" id="signText">NO IMAGE</span>
-                    <img id="signPreview" class="hidden">
-                    <input type="file" id="signInput" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+                <div>
+                    <label class="label-text text-center">স্বাক্ষর (Signature) *</label>
+                    <div class="preview-box group">
+                        <span class="text-slate-600" id="signText text-xs">CHOOSE SIGNATURE</span>
+                        <img id="signPreview" class="hidden">
+                        <input type="file" id="signInput" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+                    </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div class="space-y-1">
-                    <label class="text-emerald-500 text-sm font-semibold">নাম (বাংলা) *</label>
+                    <label class="label-text">নাম (বাংলা) *</label>
                     <input type="text" class="form-input" placeholder="সম্পূর্ণ নাম বাংলায়">
                 </div>
                 <div class="space-y-1">
-                    <label class="text-emerald-500 text-sm font-semibold">নাম (ইংরেজি) *</label>
+                    <label class="label-text">নাম (ইংরেজি) *</label>
                     <input type="text" class="form-input" placeholder="সম্পূর্ণ নাম ইংরেজিতে">
                 </div>
-
                 <div class="space-y-1">
-                    <label class="text-emerald-500 text-sm font-semibold">এনআইডি নম্বর *</label>
+                    <label class="label-text">এনআইডি নম্বর *</label>
                     <input type="text" class="form-input" placeholder="এনআইডি নাম্বার">
                 </div>
                 <div class="space-y-1">
-                    <label class="text-emerald-500 text-sm font-semibold">পিন নম্বর *</label>
+                    <label class="label-text">পিন নম্বর *</label>
                     <input type="text" class="form-input" placeholder="পিন নাম্বার">
                 </div>
-
                 <div class="space-y-1">
-                    <label class="text-emerald-500 text-sm font-semibold">পিতার নাম *</label>
+                    <label class="label-text">পিতার নাম *</label>
                     <input type="text" class="form-input" placeholder="পিতার নাম বাংলায়">
                 </div>
                 <div class="space-y-1">
-                    <label class="text-emerald-500 text-sm font-semibold">মাতার নাম *</label>
+                    <label class="label-text">মাতার নাম *</label>
                     <input type="text" class="form-input" placeholder="মাতার নাম বাংলায়">
-                </div>
-
-                <div class="space-y-1">
-                    <label class="text-emerald-500 text-sm font-semibold">জন্মস্থান *</label>
-                    <input type="text" class="form-input" placeholder="জন্মস্থান (অঞ্চল)">
-                </div>
-                <div class="space-y-1">
-                    <label class="text-emerald-500 text-sm font-semibold">জন্ম তারিখ *</label>
-                    <input type="date" class="form-input text-slate-400">
-                </div>
-
-                <div class="space-y-1">
-                    <label class="text-emerald-500 text-sm font-semibold">রক্তের গ্রুপ</label>
-                    <select class="form-select bg-[#1e293b] text-white p-[0.75rem] w-full rounded-lg border border-slate-800">
-                        <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
-                        <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
-                    </select>
-                </div>
-                <div class="space-y-1">
-                    <label class="text-emerald-500 text-sm font-semibold">প্রদানের তারিখ *</label>
-                    <input type="date" class="form-input text-slate-400">
                 </div>
             </div>
 
             <div class="space-y-1">
-                <label class="text-emerald-500 text-sm font-semibold">ঠিকানা *</label>
-                <textarea rows="3" class="form-textarea" placeholder="বাসা/হোল্ডিং, গ্রাম/রাস্তা, ডাকঘর, উপজেলা, জেলা..."></textarea>
+                <label class="label-text">ঠিকানা (Address) *</label>
+                <textarea rows="2" class="form-input" placeholder="বাসা/হোল্ডিং, গ্রাম/রাস্তা..."></textarea>
             </div>
 
-            <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-[#0f172a] font-bold py-4 rounded-lg transition text-xl shadow-lg">
-                Save & Download
+            <button type="button" onclick="downloadImage()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-[#0f172a] font-bold py-4 rounded-lg transition text-xl shadow-lg">
+                Download as Image
             </button>
         </form>
     </div>
 
     <script>
+        // ছবি ও স্বাক্ষর প্রিভিউ লজিক
         function setupPreview(inputId, previewId, textId) {
             document.getElementById(inputId).addEventListener('change', function(e) {
                 const file = e.target.files[0];
@@ -122,6 +108,20 @@
         }
         setupPreview('photoInput', 'photoPreview', 'photoText');
         setupPreview('signInput', 'signPreview', 'signText');
+
+        // ডাউনলোড ফাংশন
+        function downloadImage() {
+            const btn = event.target;
+            btn.innerText = "Processing...";
+            
+            html2canvas(document.querySelector("#capture-area")).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'NID-Data-Arifulcom.png';
+                link.href = canvas.toDataURL("image/png");
+                link.click();
+                btn.innerText = "Download as Image";
+            });
+        }
     </script>
 </body>
 </html>
