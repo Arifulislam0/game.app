@@ -3,232 +3,125 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ariful Pro Gaming Hub</title>
+    <title>Smart NID Data Entry - Ariful Tech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root { --gold: #ffcc00; --dark: #000; --glass: rgba(255, 255, 255, 0.1); }
-        body, html { margin: 0; padding: 0; width: 100%; height: 100%; font-family: 'Segoe UI', sans-serif; background: #000; overflow-x: hidden; }
-
-        /* ১. লগইন পেজ - সুন্দর ওয়ালপেপার সহ */
-        #login-page {
-            height: 100vh;
-            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
-                        url('https://wallpaperaccess.com/full/2454556.jpg'); /* এখানে আপনি আপনার পছন্দের ওয়ালপেপার লিঙ্ক দিতে পারেন */
-            background-size: cover;
-            background-position: center;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            position: fixed;
-            width: 100%;
-            z-index: 999;
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;600&display=swap');
+        body { background-color: #0f172a; color: #e2e8f0; font-family: 'Hind Siliguri', sans-serif; }
+        .form-input, .form-select, .form-textarea { 
+            background-color: #1e293b; border: 1px solid #334155; border-radius: 0.5rem; 
+            padding: 0.75rem; width: 100%; color: white; transition: all 0.3s;
         }
-
-        .login-card {
-            background: var(--glass);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: 20px;
-            border: 1px solid rgba(255,255,255,0.2);
-            text-align: center;
-            width: 85%;
-            max-width: 400px;
+        .form-input:focus, .form-textarea:focus { border-color: #10b981; outline: none; ring: 1px solid #10b981; }
+        .preview-box {
+            background-color: #000; aspect-ratio: 16 / 7; border-radius: 0.5rem;
+            display: flex; align-items: center; justify-content: center;
+            border: 1px solid #334155; position: relative; overflow: hidden;
         }
-
-        /* ২. মেইন লবি - লগইন এর পর যা আসবে */
-        #lobby-page {
-            display: none;
-            background: #0a0a0a;
-            min-height: 100vh;
-        }
-
-        .top-nav {
-            background: #111;
-            padding: 15px;
-            display: flex;
-            justify-content: space-between;
-            border-bottom: 2px solid var(--gold);
-            position: sticky;
-            top: 0;
-        }
-
-        .game-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            padding: 20px;
-        }
-
-        .game-box {
-            background: #1a1a1a;
-            border-radius: 15px;
-            overflow: hidden;
-            border: 1px solid #333;
-            transition: 0.3s;
-            text-align: center;
-            padding-bottom: 10px;
-        }
-
-        .game-box:active { transform: scale(0.95); }
-
-        .game-img {
-            height: 120px;
-            background: #222;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 50px;
-        }
-
-        /* ৩. গেম খেলার স্ক্রিন */
-        #game-screen {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: #000;
-            z-index: 1000;
-        }
-
-        /* কমন বাটন স্টাইল */
-        .btn {
-            background: var(--gold);
-            color: #000;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 10px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 15px;
-            font-size: 16px;
-        }
-
-        input {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #555;
-            background: rgba(0,0,0,0.5);
-            color: #fff;
-            box-sizing: border-box;
-        }
+        .preview-box img { width: 100%; height: 100%; object-fit: cover; }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-8">
 
-    <div id="login-page">
-        <div class="login-card">
-            <h1 style="color:var(--gold); margin-bottom:10px;">ARIFUL VIP</h1>
-            <p style="color:#ddd; margin-bottom:20px;">লগইন করে ১০০০ টাকা বোনাস নিন</p>
-            <input type="text" id="username" placeholder="ইউজার নেম বা মোবাইল">
-            <button class="btn" onclick="goToLobby()">খেলতে প্রবেশ করুন</button>
-            <p style="font-size:12px; color:#aaa; margin-top:15px;">Secure Login Powered by Arifulcom</p>
-        </div>
-    </div>
-
-    <div id="lobby-page">
-        <div class="top-nav">
-            <span id="user-id" style="color:#888;">ID: ---</span>
-            <span style="color:var(--gold); font-weight:bold;">৳ <span id="balance">0</span></span>
+    <div class="max-w-5xl mx-auto bg-[#111827] border border-slate-800 rounded-2xl overflow-hidden shadow-2xl">
+        <div class="bg-[#111827] p-6 border-b border-slate-800 flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-emerald-500">Arifulcom <span class="text-blue-500 text-sm">✔️</span></h1>
+            <div class="bg-emerald-600 px-5 py-2 rounded text-white font-bold">৳ ৬০</div>
         </div>
 
-        <div style="padding: 20px; color:var(--gold);"><h3>সব গেম দেখুন 🔥</h3></div>
+        <form id="nidForm" class="p-6 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="preview-box group">
+                    <span class="text-slate-700" id="photoText">NO IMAGE</span>
+                    <img id="photoPreview" class="hidden">
+                    <input type="file" id="photoInput" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+                </div>
+                <div class="preview-box group">
+                    <span class="text-slate-700" id="signText">NO IMAGE</span>
+                    <img id="signPreview" class="hidden">
+                    <input type="file" id="signInput" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer">
+                </div>
+            </div>
 
-        <div class="game-grid">
-            <div class="game-box" onclick="openGame('Magic Ace')">
-                <div class="game-img" style="background: linear-gradient(45deg, #400, #000);">🂡</div>
-                <h4>Magic Ace</h4>
-                <small style="color:#888;">মিনিমাম বাজি ৳১০</small>
-            </div>
-            <div class="game-box" onclick="openGame('Slot Luck')">
-                <div class="game-img" style="background: linear-gradient(45deg, #040, #000);">🎰</div>
-                <h4>Slot Luck</h4>
-                <small style="color:#888;">মিনিমাম বাজি ৳৫০</small>
-            </div>
-            <div class="game-box" onclick="openGame('Dragon Tiger')">
-                <div class="game-img" style="background: linear-gradient(45deg, #004, #000);">🐲</div>
-                <h4>Dragon vs Tiger</h4>
-                <small style="color:#888;">খুব শীঘ্রই আসছে</small>
-            </div>
-        </div>
-    </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="space-y-1">
+                    <label class="text-emerald-500 text-sm font-semibold">নাম (বাংলা) *</label>
+                    <input type="text" class="form-input" placeholder="সম্পূর্ণ নাম বাংলায়">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-emerald-500 text-sm font-semibold">নাম (ইংরেজি) *</label>
+                    <input type="text" class="form-input" placeholder="সম্পূর্ণ নাম ইংরেজিতে">
+                </div>
 
-    <div id="game-screen">
-        <div style="padding:15px; display:flex; justify-content:space-between; background:#111;">
-            <button onclick="closeGame()" style="background:red; color:white; border:none; padding:5px 15px; border-radius:5px;">Exit</button>
-            <span id="active-game-name" style="color:var(--gold); font-weight:bold;">Game</span>
-            <span style="color:var(--gold);">৳ <span id="game-bal-display">0</span></span>
-        </div>
-        <div id="game-content" style="padding:20px; text-align:center;">
+                <div class="space-y-1">
+                    <label class="text-emerald-500 text-sm font-semibold">এনআইডি নম্বর *</label>
+                    <input type="text" class="form-input" placeholder="এনআইডি নাম্বার">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-emerald-500 text-sm font-semibold">পিন নম্বর *</label>
+                    <input type="text" class="form-input" placeholder="পিন নাম্বার">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-emerald-500 text-sm font-semibold">পিতার নাম *</label>
+                    <input type="text" class="form-input" placeholder="পিতার নাম বাংলায়">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-emerald-500 text-sm font-semibold">মাতার নাম *</label>
+                    <input type="text" class="form-input" placeholder="মাতার নাম বাংলায়">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-emerald-500 text-sm font-semibold">জন্মস্থান *</label>
+                    <input type="text" class="form-input" placeholder="জন্মস্থান (অঞ্চল)">
+                </div>
+                <div class="space-y-1">
+                    <label class="text-emerald-500 text-sm font-semibold">জন্ম তারিখ *</label>
+                    <input type="date" class="form-input text-slate-400">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="text-emerald-500 text-sm font-semibold">রক্তের গ্রুপ</label>
+                    <select class="form-select bg-[#1e293b] text-white p-[0.75rem] w-full rounded-lg border border-slate-800">
+                        <option>A+</option><option>A-</option><option>B+</option><option>B-</option>
+                        <option>O+</option><option>O-</option><option>AB+</option><option>AB-</option>
+                    </select>
+                </div>
+                <div class="space-y-1">
+                    <label class="text-emerald-500 text-sm font-semibold">প্রদানের তারিখ *</label>
+                    <input type="date" class="form-input text-slate-400">
+                </div>
             </div>
+
+            <div class="space-y-1">
+                <label class="text-emerald-500 text-sm font-semibold">ঠিকানা *</label>
+                <textarea rows="3" class="form-textarea" placeholder="বাসা/হোল্ডিং, গ্রাম/রাস্তা, ডাকঘর, উপজেলা, জেলা..."></textarea>
+            </div>
+
+            <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-[#0f172a] font-bold py-4 rounded-lg transition text-xl shadow-lg">
+                Save & Download
+            </button>
+        </form>
     </div>
 
     <script>
-        let wallet = 1000;
-
-        // লগইন ফাংশন
-        function goToLobby() {
-            const name = document.getElementById('username').value;
-            if(!name) { alert("নাম লিখুন!"); return; }
-
-            document.getElementById('login-page').style.display = 'none';
-            document.getElementById('lobby-page').style.display = 'block';
-            document.getElementById('user-id').innerText = "ID: " + name.substring(0,4).toUpperCase() + Math.floor(1000 + Math.random() * 9000);
-            document.getElementById('balance').innerText = wallet;
+        function setupPreview(inputId, previewId, textId) {
+            document.getElementById(inputId).addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = document.getElementById(previewId);
+                        img.src = event.target.result;
+                        img.classList.remove('hidden');
+                        document.getElementById(textId).classList.add('hidden');
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
         }
-
-        // গেম ওপেন করার ফাংশন
-        function openGame(name) {
-            document.getElementById('lobby-page').style.display = 'none';
-            document.getElementById('game-screen').style.display = 'block';
-            document.getElementById('active-game-name').innerText = name;
-            document.getElementById('game-bal-display').innerText = wallet;
-
-            if(name === 'Magic Ace') {
-                loadMagicAce();
-            } else {
-                document.getElementById('game-content').innerHTML = <h2>${name} গেমটি লোড হচ্ছে...</h2>;
-            }
-        }
-
-        // গেম বন্ধ করার ফাংশন
-        function closeGame() {
-            document.getElementById('game-screen').style.display = 'none';
-            document.getElementById('lobby-page').style.display = 'block';
-            document.getElementById('balance').innerText = wallet;
-        }
-
-        // --- ম্যাজিক এস গেমের কোড ---
-        function loadMagicAce() {
-            document.getElementById('game-content').innerHTML = `
-                <div id="card-box" style="font-size:120px; margin:30px 0;">?</div>
-                <p>বাজি ধরুন (৳)</p>
-                <input type="number" id="bet-amt" value="10" style="width:100px; text-align:center;">
-                <div style="display:flex; gap:10px; margin-top:20px;">
-                    <button class="btn" style="background:red; color:white;" onclick="play(0)">লাল (Red)</button>
-                    <button class="btn" style="background:#333; color:white;" onclick="play(1)">কালো (Black)</button>
-                </div>
-            `;
-        }
-
-        function play(pick) {
-            let bet = parseInt(document.getElementById('bet-amt').value);
-            if(bet > wallet) { alert("ব্যালেন্স নেই!"); return; }
-
-            const isRed = Math.random() > 0.5;
-            const win = (pick === 0 && isRed) || (pick === 1 && !isRed);
-            
-            document.getElementById('card-box').innerText = isRed ? "A♦" : "A♠";
-            document.getElementById('card-box').style.color = isRed ? "red" : "white";
-
-            if(win) {
-                wallet += bet;
-                alert("বিঙ্গো! আপনি জিতেছেন।");
-            } else {
-                wallet -= bet;
-                alert("দুঃখিত! হেরেছেন।");
-            }
-            document.getElementById('game-bal-display').innerText = wallet;
-        }
+        setupPreview('photoInput', 'photoPreview', 'photoText');
+        setupPreview('signInput', 'signPreview', 'signText');
     </script>
 </body>
 </html>
