@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart NID & MRZ Generator - Ariful Tech</title>
+    <title>Smart NID & MRZ Pro - Ariful Tech</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;600&family=Courier+Prime:wght@700&display=swap');
         body { background-color: #0f172a; color: #e2e8f0; font-family: 'Hind Siliguri', sans-serif; }
-        .form-input { background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 12px; width: 100%; color: white; }
+        .form-input { background-color: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 12px; width: 100%; color: white; transition: 0.3s; }
+        .form-input:focus { border-color: #10b981; outline: none; }
         .label-green { color: #10b981; font-weight: 600; font-size: 14px; margin-bottom: 5px; display: block; }
         
-        /* NID Card Design */
-        .card-container { width: 500px; height: 310px; background: #fff; color: #000; position: relative; border-radius: 15px; overflow: hidden; display: none; border: 1px solid #ccc; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
-        .front-bg { background: linear-gradient(135deg, #f0fff4 0%, #ffffff 100%); height: 100%; padding: 15px; }
-        .mrz-text { font-family: 'Courier Prime', monospace; font-size: 15px; letter-spacing: 2px; line-height: 1.1; color: #000; }
+        /* NID Card Style */
+        .card-container { width: 500px; height: 310px; background: white; color: black; position: absolute; left: -9999px; border-radius: 15px; overflow: hidden; border: 1px solid #ccc; }
+        .mrz-text { font-family: 'Courier Prime', monospace; font-size: 16px; letter-spacing: 2px; line-height: 1.1; font-weight: 700; }
         .nid-no { color: #d90000; font-weight: bold; font-size: 18px; }
     </style>
 </head>
@@ -34,6 +34,10 @@
                     <label class="label-green">স্বাক্ষর</label>
                     <input type="file" id="signInput" class="form-input">
                 </div>
+                <div>
+                    <label class="label-green">পিন নম্বর *</label>
+                    <input type="text" id="pinNo" class="form-input" placeholder="পিন নাম্বার দিন">
+                </div>
             </div>
 
             <div class="space-y-4">
@@ -41,7 +45,7 @@
                 <input type="text" id="nameEn" class="form-input" placeholder="Name (English)">
                 <input type="text" id="fatherName" class="form-input" placeholder="পিতার নাম">
                 <input type="text" id="motherName" class="form-input" placeholder="মাতার নাম">
-                <input type="text" id="nidNo" class="form-input" placeholder="এনআইডি নম্বর (১০/১৭ ডিজিট)">
+                <input type="text" id="nidNo" class="form-input" placeholder="এনআইডি নম্বর">
             </div>
 
             <div class="space-y-4">
@@ -57,20 +61,17 @@
             </div>
         </div>
 
-        <button onclick="generateNID()" class="w-full bg-emerald-600 mt-8 py-4 rounded-xl font-bold text-xl hover:bg-emerald-500 transition shadow-lg shadow-emerald-900/20">
+        <button id="downloadBtn" onclick="generateNID()" class="w-full bg-emerald-600 mt-8 py-4 rounded-xl font-bold text-xl hover:bg-emerald-500 transition shadow-lg shadow-emerald-900/20">
             Generate & Download (Front & Back)
         </button>
     </div>
 
     <div id="nid-front" class="card-container">
-        <div class="front-bg">
-            <div class="flex justify-between border-b border-emerald-800 pb-1 mb-2">
-                <div class="text-[12px] font-bold text-emerald-800 uppercase">Government of the People's Republic of Bangladesh</div>
-                <div class="bg-red-600 w-4 h-4 rounded-full"></div>
-            </div>
+        <div class="p-4 h-full relative" style="background: linear-gradient(135deg, #f9fffb 0%, #ffffff 100%);">
+            <div class="text-center text-[12px] font-bold text-emerald-800 border-b border-emerald-800 pb-1 mb-2 uppercase">Government of the People's Republic of Bangladesh</div>
             <div class="flex">
-                <img id="card-img" class="w-[100px] h-[120px] border border-gray-300 object-cover bg-gray-100">
-                <div class="ml-3 text-[11px] space-y-1">
+                <img id="card-img" class="w-[100px] h-[120px] border border-gray-300 object-cover bg-gray-50">
+                <div class="ml-4 text-[11px] space-y-1">
                     <p><strong>নাম:</strong> <span id="f-nameBn"></span></p>
                     <p><strong>Name:</strong> <span id="f-nameEn"></span></p>
                     <p><strong>পিতা:</strong> <span id="f-father"></span></p>
@@ -79,92 +80,101 @@
                     <p class="text-red-600 font-bold">ID NO: <span class="nid-no" id="f-nid"></span></p>
                 </div>
             </div>
-            <div class="mt-2 border-t pt-1 flex justify-between items-end">
-                <div class="text-[9px]">স্বাক্ষর: <br> <img id="card-sign" class="h-8 w-24 object-contain"></div>
-                <div class="w-10 h-8 bg-yellow-500 rounded-sm border border-gray-400"></div>
+            <div class="absolute bottom-4 left-4 text-[9px]">
+                স্বাক্ষর: <br> <img id="card-sign" class="h-8 w-28 object-contain">
             </div>
+            <div style="position: absolute; right: 20px; bottom: 20px; width: 45px; height: 35px; background: #e5c100; border-radius: 4px; border: 1px solid #b39700;"></div>
         </div>
     </div>
 
     <div id="nid-back" class="card-container">
-        <div class="p-4 bg-white h-full relative">
-            <div class="text-[10px] space-y-1">
+        <div class="p-5 bg-white h-full relative">
+            <div class="text-[11px] space-y-1">
                 <p><strong>ঠিকানা:</strong> <span id="b-address"></span></p>
-                <p><strong>Blood Group:</strong> <span id="b-blood"></span> <strong>Place of Birth:</strong> <span id="b-place"></span></p>
-                <p><strong>Issue Date:</strong> <span id="b-issue"></span></p>
+                <p><strong>রক্তের গ্রুপ:</strong> <span id="b-blood"></span> <strong>জন্মস্থান:</strong> <span id="b-place"></span></p>
+                <p><strong>প্রদানের তারিখ:</strong> <span id="b-issue"></span> <strong>পিন:</strong> <span id="b-pin"></span></p>
             </div>
             <div class="mt-4">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=50x50&data=ArifulTech" class="w-12 h-12">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=ArifulTechNID" class="w-14 h-14">
             </div>
-            <div class="absolute bottom-4 left-4 mrz-text" id="mrz-output"></div>
+            <div class="absolute bottom-6 left-6 mrz-text" id="mrz-output"></div>
         </div>
     </div>
 
     <script>
         function generateMRZ(nameEn, nid, dob) {
-            // Simple MRZ Logic for Bangladesh NID
-            let cleanName = nameEn.toUpperCase().replace(/[^A-Z]/g, '<');
-            let dobFormat = dob.replace(/-/g, '').substring(2); // YYMMDD
-            let line1 = I<BGD${nid}${'<'.repeat(30-nid.length)}.substring(0, 30);
-            let line2 = ${dobFormat}${'<'.repeat(7)}${'<'.repeat(23-dobFormat.length)}.substring(0, 30);
-            let line3 = ${cleanName}${'<'.repeat(30-cleanName.length)}.substring(0, 30);
-            return ${line1}<br>${line2}<br>${line3};
+            let n = nameEn.toUpperCase().replace(/[^A-Z]/g, '<');
+            let d = dob.replace(/-/g, '').substring(2); 
+            let l1 = I<BGD${nid}${'<'.repeat(30-nid.length)}.substring(0, 30);
+            let l2 = ${d}${'<'.repeat(7)}${'<'.repeat(23-d.length)}.substring(0, 30);
+            let l3 = ${n}${'<'.repeat(30-n.length)}.substring(0, 30);
+            return ${l1}<br>${l2}<br>${l3};
         }
 
         async function generateNID() {
-            const btn = event.target;
-            btn.innerText = "Generating...";
+            const btn = document.getElementById('downloadBtn');
+            btn.innerText = "Processing...";
+            btn.disabled = true;
 
-            // Front Data
-            document.getElementById('f-nameBn').innerText = document.getElementById('nameBn').value;
-            document.getElementById('f-nameEn').innerText = document.getElementById('nameEn').value;
-            document.getElementById('f-father').innerText = document.getElementById('fatherName').value;
-            document.getElementById('f-mother').innerText = document.getElementById('motherName').value;
-            document.getElementById('f-dob').innerText = document.getElementById('dob').value;
-            document.getElementById('f-nid').innerText = document.getElementById('nidNo').value;
+            try {
+                // Front Data Fill
+                document.getElementById('f-nameBn').innerText = document.getElementById('nameBn').value;
+                document.getElementById('f-nameEn').innerText = document.getElementById('nameEn').value;
+                document.getElementById('f-father').innerText = document.getElementById('fatherName').value;
+                document.getElementById('f-mother').innerText = document.getElementById('motherName').value;
+                document.getElementById('f-dob').innerText = document.getElementById('dob').value;
+                document.getElementById('f-nid').innerText = document.getElementById('nidNo').value;
 
-            // Back Data
-            document.getElementById('b-address').innerText = document.getElementById('address').value;
-            document.getElementById('b-blood').innerText = document.getElementById('bloodGroup').value;
-            document.getElementById('b-place').innerText = document.getElementById('birthPlace').value;
-            document.getElementById('b-issue').innerText = document.getElementById('issueDate').value;
-            
-            // MRZ Generation
-            document.getElementById('mrz-output').innerHTML = generateMRZ(
-                document.getElementById('nameEn').value,
-                document.getElementById('nidNo').value,
-                document.getElementById('dob').value
-            );
+                // Back Data Fill
+                document.getElementById('b-address').innerText = document.getElementById('address').value;
+                document.getElementById('b-blood').innerText = document.getElementById('bloodGroup').value;
+                document.getElementById('b-place').innerText = document.getElementById('birthPlace').value;
+                document.getElementById('b-issue').innerText = document.getElementById('issueDate').value;
+                document.getElementById('b-pin').innerText = document.getElementById('pinNo').value;
+                
+                // MRZ
+                document.getElementById('mrz-output').innerHTML = generateMRZ(
+                    document.getElementById('nameEn').value,
+                    document.getElementById('nidNo').value,
+                    document.getElementById('dob').value
+                );
 
-            // Handle Images
-            const photoFile = document.getElementById('photoInput').files[0];
-            const signFile = document.getElementById('signInput').files[0];
+                // Handle Images
+                const photoFile = document.getElementById('photoInput').files[0];
+                const signFile = document.getElementById('signInput').files[0];
+                if (photoFile) document.getElementById('card-img').src = URL.createObjectURL(photoFile);
+                if (signFile) document.getElementById('card-sign').src = URL.createObjectURL(signFile);
 
-            if (photoFile) document.getElementById('card-img').src = URL.createObjectURL(photoFile);
-            if (signFile) document.getElementById('card-sign').src = URL.createObjectURL(signFile);
+                // ছিটকে ছবি তোলা (Capture)
+                const frontEl = document.getElementById('nid-front');
+                const backEl = document.getElementById('nid-back');
 
-            // Capture Front
-            const frontTemplate = document.getElementById('nid-front');
-            frontTemplate.style.display = 'block';
-            const frontCanvas = await html2canvas(frontTemplate);
-            download(frontCanvas.toDataURL(), "NID_Front.png");
-            frontTemplate.style.display = 'none';
+                frontEl.style.left = "0px"; // সাময়িকভাবে সামনে আনা
+                const canvasF = await html2canvas(frontEl, { useCORS: true, scale: 2 });
+                download(canvasF.toDataURL("image/png"), "Front_Part.png");
+                frontEl.style.left = "-9999px";
 
-            // Capture Back
-            const backTemplate = document.getElementById('nid-back');
-            backTemplate.style.display = 'block';
-            const backCanvas = await html2canvas(backTemplate);
-            download(backCanvas.toDataURL(), "NID_Back.png");
-            backTemplate.style.display = 'none';
+                backEl.style.left = "0px";
+                const canvasB = await html2canvas(backEl, { useCORS: true, scale: 2 });
+                download(canvasB.toDataURL("image/png"), "Back_Part.png");
+                backEl.style.left = "-9999px";
+
+            } catch (err) {
+                alert("ডাউনলোড করতে সমস্যা হয়েছে। আবার চেষ্টা করুন।");
+                console.error(err);
+            }
 
             btn.innerText = "Generate & Download (Front & Back)";
+            btn.disabled = false;
         }
 
         function download(url, filename) {
             const a = document.createElement('a');
             a.href = url;
             a.download = filename;
+            document.body.appendChild(a);
             a.click();
+            document.body.removeChild(a);
         }
     </script>
 </body>
